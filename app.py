@@ -186,10 +186,8 @@ def embed(tweet):
             return status_code, tweet_content, user_info, is_RT
         else:
             return False
-    except requests.exceptions.Timeout:
-        st.error('Connection to web.archive.org timed out.')
-    except requests.exceptions.ConnectionError:
-        st.error('Failed to establish a new connection with web.archive.org.')
+    except* (requests.exceptions.Timeout, requests.exceptions.ConnectionError) as e:
+        st.error(f'Connection error: {e}')
     except UnboundLocalError:
         st.empty()
     except Exception as e:
@@ -208,11 +206,8 @@ def tweets_count(handle, saved_at):
                 return total_tweets
             else:
                 return 0
-    except requests.exceptions.Timeout:
-        st.error('Connection to web.archive.org timed out.')
-        st.stop()
-    except requests.exceptions.ConnectionError:
-        st.error('Failed to establish a new connection with web.archive.org.')
+    except* (requests.exceptions.Timeout, requests.exceptions.ConnectionError) as e:
+        st.error(f'Connection error: {e}')
         st.stop()
     except UnboundLocalError:
         st.empty()
@@ -233,10 +228,8 @@ def query_api(handle, limit, offset, saved_at):
 
         if response.status_code == 200 or response.status_code == 304:
             return response.json()
-    except requests.exceptions.Timeout:
-        st.error('Connection to web.archive.org timed out.')
-    except requests.exceptions.ConnectionError:
-        st.error('Failed to establish a new connection with web.archive.org.')
+    except* (requests.exceptions.Timeout, requests.exceptions.ConnectionError) as e:
+        st.error(f'Connection error: {e}')
     except UnboundLocalError:
         st.empty()
     except requests.exceptions.HTTPError:
@@ -340,11 +333,8 @@ def display_not_tweet():
                 st.error(response_json.status_code)
 
                 st.divider()
-        except requests.exceptions.Timeout:
-            st.error('Connection to web.archive.org timed out.')
-            st.divider()
-        except requests.exceptions.ConnectionError:
-            st.error('Failed to establish a new connection with web.archive.org.')
+        except* (requests.exceptions.Timeout, requests.exceptions.ConnectionError) as e:
+            st.error(f'Connection error: {e}')
             st.divider()
         except UnboundLocalError:
             st.empty()
