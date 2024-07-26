@@ -112,7 +112,7 @@ def clean_link(link: str) -> str:
     else:
         return link
 
-def pattern_tweet(tweet: str) -> str:
+def pattern_ttweet(tweet: str) -> str:
     # Reply: /status//
     # Link:  /status///
     # Twimg: /status/https://pbs
