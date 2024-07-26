@@ -236,7 +236,7 @@ def query_api(handle, limit, offset, saved_at):
     except requests.exceptions.HTTPError:
         st.error('''
         **Temporarily Offline**
-        
+
         Internet Archive services are temporarily offline. Please check Internet Archive [Twitter feed](https://twitter.com/internetarchive/) for the latest information.
         ''')
         st.stop()
@@ -356,7 +356,7 @@ def next_page():
     #scroll to top config
     st.session_state.update_component += 1
     scroll_into_view()
-    
+
 # UI
 st.title('Wayback Tweets [![GitHub release (latest by date including pre-releases)](https://img.shields.io/github/v/release/claromes/waybacktweets?include_prereleases)](https://github.com/claromes/waybacktweets/releases) [![Star](https://img.shields.io/github/stars/claromes/waybacktweets?style=social)](https://github.com/claromes/waybacktweets)', anchor=False)
 st.write('Display multiple archived tweets on Wayback Machine and avoid opening each link manually')
@@ -401,7 +401,7 @@ if query or st.session_state.count:
             st.session_state.current_handle = handle
 
             return_none_count = 0
-                
+
             start_index = st.session_state.offset
             end_index = min(st.session_state.count, start_index + tweets_per_page)
 
@@ -413,7 +413,7 @@ if query or st.session_state.count:
                             tweet = embed(tweet_links[i])
 
                             status = check_double_status(link, tweet_links[i])
-                            
+
                             if not not_available:
                                 attr(i)
 
