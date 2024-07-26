@@ -6,6 +6,7 @@ import json
 import re
 from urllib.parse import unquote
 from typing import TypeVar, List, Tuple, Union, LiteralString
+from dataclasses import dataclass
 
 Ts = TypeVar('Ts')
 
@@ -474,7 +475,7 @@ if query or st.session_state.count:
             prev, _ , next = st.columns([3, 4, 3])
 
             prev.button('Previous', disabled=st.session_state.prev_disabled, key='prev_button_key', on_click=prev_page, type='primary', use_container_width=True)
-                            next.button('Next', disabled=st.session_state.next_disabled, key='next_button_key', on_click=next_page, type='primary', use_container_width=True)
+            next.button('Next', disabled=st.session_state.next_disabled, key='next_button_key', on_click=                            next_page, type='primary', use_container_width=True)
 
             if not links:
                 st.error('Unable to query the Wayback Machine API.')
