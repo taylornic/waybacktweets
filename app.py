@@ -192,6 +192,8 @@ def embed(tweet):
         st.error('Failed to establish a new connection with web.archive.org.')
     except UnboundLocalError:
         st.empty()
+    except Exception as e:
+        st.error(f'An error occurred: {e}')
 
 @st.cache_data(ttl=1800, show_spinner=False)
 def tweets_count(handle, saved_at):
@@ -211,8 +213,12 @@ def tweets_count(handle, saved_at):
         st.stop()
     except requests.exceptions.ConnectionError:
         st.error('Failed to establish a new connection with web.archive.org.')
+        st.stop()
     except UnboundLocalError:
         st.empty()
+    except Exception as e:
+        st.error(f'An error occurred: {e}')
+        st.stop()
 
 @st.cache_data(ttl=1800, show_spinner=False)
 def query_api(handle, limit, offset, saved_at):
@@ -239,6 +245,9 @@ def query_api(handle, limit, offset, saved_at):
 
         Internet Archive services are temporarily offline. Please check Internet Archive [Twitter feed](https://twitter.com/internetarchive/) for the latest information.
         ''')
+        st.stop()
+    except Exception as e:
+        st.error(f'An error occurred: {e}')
         st.stop()
 
 @st.cache_data(ttl=1800, show_spinner=False)
@@ -339,6 +348,9 @@ def display_not_tweet():
             st.divider()
         except UnboundLocalError:
             st.empty()
+        except Exception as e:
+            st.error(f'An error occurred: {e}')
+            st.divider()
     else:
         st.warning('MIME Type was not parsed.')
         st.divider()
@@ -466,4 +478,7 @@ if query or st.session_state.count:
 
         If the problem persists [open an issue](https://github.com/claromes/waybacktweets/issues).
         ''')
+        st.session_state.offset = 0
+    except Exception as e:
+        st.error(f'An error occurred: {e}')
         st.session_state.offset = 0
