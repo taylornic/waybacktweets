@@ -5,6 +5,9 @@ import streamlit.components.v1 as components
 import json
 import re
 from urllib.parse import unquote
+from typing import TypeVar, List, Tuple, Union
+
+Ts = TypeVar('Ts')
 
 year = datetime.datetime.now().year
 
@@ -74,7 +77,7 @@ if 'saved_at' not in st.session_state:
 if 'count' not in st.session_state:
     st.session_state.count = False
 
-def scroll_into_view():
+def scroll_into_view() -> None:
     js = f'''
     <script>
         window.parent.document.querySelector('section.main').scrollTo(0, 0);
@@ -84,7 +87,7 @@ def scroll_into_view():
 
     components.html(js, width=0, height=0)
 
-def clean_tweet(tweet):
+def clean_tweet(tweet: str) -> str:
     handle = st.session_state.current_handle.lower()
     tweet_lower = tweet.lower()
 
@@ -97,7 +100,7 @@ def clean_tweet(tweet):
     else:
         return tweet
 
-def clean_link(link):
+def clean_link(link: str) -> str:
     handle = st.session_state.current_handle.lower()
     link = link.lower()
 
@@ -109,7 +112,7 @@ def clean_link(link):
     else:
         return link
 
-def pattern_tweet(tweet):
+def pattern_tweet(tweet: str) -> str:
     # Reply: /status//
     # Link:  /status///
     # Twimg: /status/https://pbs
@@ -122,7 +125,7 @@ def pattern_tweet(tweet):
     else:
         return tweet
 
-def pattern_tweet_id(tweet):
+def pattern_tweet_id(tweet: str) -> str:
     # Delete sub-endpoint (/photos, /likes, /retweet...)
     pattern_username = re.compile(r'https://twitter\.com/([^/]+)/status/\d+')
     match_username = pattern_username.match(tweet)
@@ -137,13 +140,13 @@ def pattern_tweet_id(tweet):
     else:
         return tweet
 
-def check_double_status(url_wb, url_tweet):
+def check_double_status(url_wb: str, url_tweet: str) -> bool:
     if url_wb.count('/status/') == 2 and not 'twitter.com' in url_tweet:
         return True
 
     return False
 
-def embed(tweet):
+def embed(tweet: str) -> Union[Tuple[int, List[str], List[str], List[bool]], bool]:
     try:
         url = f'https://publish.twitter.com/oembed?url={clean_tweet(tweet)}'
         response = requests.get(url)
@@ -197,7 +200,7 @@ def embed(tweet):
         st.error(f'An error occurred: {e}')
 
 @st.cache_data(ttl=1800, show_spinner=False)
-def tweets_count(handle, saved_at):
+def tweets_count(handle: str, saved_at: Tuple[int, int]) -> int:
     url = f'https://web.archive.org/cdx/search/cdx?url=https://twitter.com/{handle}/status/*&collapse=timestamp:8&output=json&from={saved_at[0]}&to={saved_at[1]}'
     try:
         response = requests.get(url)
@@ -222,7 +225,7 @@ def tweets_count(handle, saved_at):
         st.stop()
 
 @st.cache_data(ttl=1800, show_spinner=False)
-def query_api(handle, limit, offset, saved_at):
+def query_api(handle: str, limit: int, offset: int, saved_at: Tuple[int, int]) -> Union[List[Ts], None]:
     if not handle:
         st.warning('username, please!')
         st.stop()
@@ -254,7 +257,7 @@ def query_api(handle, limit, offset, saved_at):
         st.stop()
 
 @st.cache_data(ttl=1800, show_spinner=False)
-def parse_links(links):
+def parse_links(links: List[Ts]) -> Tuple[List[str], List[str], List[str], List[str]]:
     parsed_links = []
     timestamp = []
     tweet_links = []
@@ -273,7 +276,7 @@ def parse_links(links):
 
     return parsed_links, tweet_links, parsed_mimetype, timestamp
 
-def attr(i):
+def attr(i: int) -> None:
     original_tweet = pattern_tweet_id(clean_tweet(tweet_links[i]))
 
     if status:
@@ -283,7 +286,7 @@ def attr(i):
 
     st.markdown(f'{i+1 + st.session_state.offset}. [**archived url**]({link}) · [**original url**]({original_tweet}) · **MIME Type:** {mimetype[i]} · **Saved at:** {datetime.datetime.strptime(timestamp[i], "%Y%m%d%H%M%S")}')
 
-def display_tweet():
+def display_tweet() -> None:
     if mimetype[i] == 'application/json' or mimetype[i] == 'text/html' or mimetype[i] == 'unk' or mimetype[i] == 'warc/revisit':
         if is_RT[0] == True:
             st.info('*Retweet*')
@@ -296,7 +299,7 @@ def display_tweet():
 
         st.divider()
 
-def display_not_tweet():
+def display_not_tweet() -> None:
     original_link = pattern_tweet_id(clean_tweet(tweet_links[i]))
 
     if status:
@@ -358,14 +361,14 @@ def display_not_tweet():
         st.warning('MIME Type was not parsed.')
         st.divider()
 
-def prev_page():
+def prev_page() -> None:
     st.session_state.offset -= tweets_per_page
 
     #scroll to top config
     st.session_state.update_component += 1
     scroll_into_view()
 
-def next_page():
+def next_page() -> None:
     st.session_state.offset += tweets_per_page
 
     #scroll to top config
