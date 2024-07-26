@@ -5,7 +5,7 @@ import streamlit.components.v1 as components
 import json
 import re
 from urllib.parse import unquote
-from typing import TypeVar, List, Tuple, Union
+from typing import TypeVar, List, Tuple, Union, Self
 
 Ts = TypeVar('Ts')
 
@@ -476,8 +476,8 @@ if query or st.session_state.count:
             prev.button('Previous', disabled=st.session_state.prev_disabled, key='prev_button_key', on_click=prev_page, type='primary', use_container_width=True)
             next.button('Next', disabled=st.session_state.next_disabled, key='next_button_key', on_click=next_page, type='primary', use_container_width=True)
 
-        if not links:
-            st.error('Unable to query the Wayback Machine API.')
+            if not links:
+                st.error('Unable to query the Wayback Machine API.')
     except TypeError as e:
         e.add_note('TypeError occurred while processing tweets.')
         st.error(f'''
