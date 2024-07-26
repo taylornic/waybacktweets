@@ -5,7 +5,7 @@ import streamlit.components.v1 as components
 import json
 import re
 from urllib.parse import unquote
-from typing import TypeVar, List, Tuple, Union, Self
+from typing import TypeVar, List, Tuple, Union, LiteralString
 
 Ts = TypeVar('Ts')
 
@@ -87,7 +87,7 @@ def scroll_into_view() -> None:
 
     components.html(js, width=0, height=0)
 
-def clean_tweet(tweet: str) -> str:
+def clean_tweet(tweet: LiteralString) -> str:
     handle = st.session_state.current_handle.lower()
     tweet_lower = tweet.lower()
 
@@ -100,7 +100,7 @@ def clean_tweet(tweet: str) -> str:
     else:
         return tweet
 
-def clean_link(link: str) -> str:
+def clean_link(link: LiteralString) -> str:
     handle = st.session_state.current_handle.lower()
     link = link.lower()
 
@@ -112,7 +112,7 @@ def clean_link(link: str) -> str:
     else:
         return link
 
-def pattern_ttweet(tweet: str) -> str:
+def pattern_ttweet(tweet: LiteralString) -> str:
     # Reply: /status//
     # Link:  /status///
     # Twimg: /status/https://pbs
@@ -125,7 +125,7 @@ def pattern_ttweet(tweet: str) -> str:
     else:
         return tweet
 
-def pattern_tweet_id(tweet: str) -> str:
+def pattern_tweet_id(tweet: LiteralString) -> str:
     # Delete sub-endpoint (/photos, /likes, /retweet...)
     pattern_username = re.compile(r'https://twitter\.com/([^/]+)/status/\d+')
     match_username = pattern_username.match(tweet)
@@ -140,13 +140,13 @@ def pattern_tweet_id(tweet: str) -> str:
     else:
         return tweet
 
-def check_double_status(url_wb: str, url_tweet: str) -> bool:
+def check_double_status(url_wb: LiteralString, url_tweet: LiteralString) -> bool:
     if url_wb.count('/status/') == 2 and not 'twitter.com' in url_tweet:
         return True
 
     return False
 
-def embed(tweet: str) -> Union[Tuple[int, List[str], List[str], List[bool]], bool]:
+def embed(tweet: LiteralString) -> Union[Tuple[int, List[str], List[str], List[bool]], bool]:
     try:
         url = f'https://publish.twitter.com/oembed?url={clean_tweet(tweet)}'
         response = requests.get(url)
@@ -200,7 +200,7 @@ def embed(tweet: str) -> Union[Tuple[int, List[str], List[str], List[bool]], boo
         st.error(f'An error occurred: {e}')
 
 @st.cache_data(ttl=1800, show_spinner=False)
-def tweets_count(handle: str, saved_at: Tuple[int, int]) -> int:
+def tweets_count(handle: LiteralString, saved_at: Tuple[int, int]) -> int:
     url = f'https://web.archive.org/cdx/search/cdx?url=https://twitter.com/{handle}/status/*&collapse=timestamp:8&output=json&from={saved_at[0]}&to={saved_at[1]}'
     try:
         response = requests.get(url)
@@ -225,7 +225,7 @@ def tweets_count(handle: str, saved_at: Tuple[int, int]) -> int:
         st.stop()
 
 @st.cache_data(ttl=1800, show_spinner=False)
-def query_api(handle: str, limit: int, offset: int, saved_at: Tuple[int, int]) -> Union[List[Ts], None]:
+def query_api(handle: LiteralString, limit: int, offset: int, saved_at: Tuple[int, int]) -> Union[List[Ts], None]:
     if not handle:
         st.warning('username, please!')
         st.stop()
@@ -474,7 +474,7 @@ if query or st.session_state.count:
             prev, _ , next = st.columns([3, 4, 3])
 
             prev.button('Previous', disabled=st.session_state.prev_disabled, key='prev_button_key', on_click=prev_page, type='primary', use_container_width=True)
-            next.button('Next', disabled=st.session_state.next_disabled, key='next_button_key', on_click=next_page, type='primary', use_container_width=True)
+                            next.button('Next', disabled=st.session_state.next_disabled, key='next_button_key', on_click=next_page, type='primary', use_container_width=True)
 
             if not links:
                 st.error('Unable to query the Wayback Machine API.')
