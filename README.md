@@ -26,13 +26,17 @@ Tool that displays, via [Wayback CDX Server API](https://github.com/internetarch
 
 ### Requirement
 
-- Python 3.8+
+- Python 3.11+
 
 ### Installation
 
 $ `git clone git@github.com:claromes/waybacktweets.git`
 
 $ `cd waybacktweets`
+
+$ `pyenv install 3.11.0`
+
+$ `pyenv local 3.11.0`
 
 $ `pip install -r requirements.txt`
 
