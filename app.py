@@ -186,11 +186,14 @@ def embed(tweet):
             return status_code, tweet_content, user_info, is_RT
         else:
             return False
-    except* (requests.exceptions.Timeout, requests.exceptions.ConnectionError) as e:
+    except (requests.exceptions.Timeout, requests.exceptions.ConnectionError) as e:
+        e.add_note('Connection error occurred while embedding tweet.')
         st.error(f'Connection error: {e}')
-    except UnboundLocalError:
+    except UnboundLocalError as e:
+        e.add_note('UnboundLocalError occurred while embedding tweet.')
         st.empty()
     except Exception as e:
+        e.add_note('An unexpected error occurred while embedding tweet.')
         st.error(f'An error occurred: {e}')
 
 @st.cache_data(ttl=1800, show_spinner=False)
@@ -206,12 +209,15 @@ def tweets_count(handle, saved_at):
                 return total_tweets
             else:
                 return 0
-    except* (requests.exceptions.Timeout, requests.exceptions.ConnectionError) as e:
+    except (requests.exceptions.Timeout, requests.exceptions.ConnectionError) as e:
+        e.add_note('Connection error occurred while counting tweets.')
         st.error(f'Connection error: {e}')
         st.stop()
-    except UnboundLocalError:
+    except UnboundLocalError as e:
+        e.add_note('UnboundLocalError occurred while counting tweets.')
         st.empty()
     except Exception as e:
+        e.add_note('An unexpected error occurred while counting tweets.')
         st.error(f'An error occurred: {e}')
         st.stop()
 
@@ -228,11 +234,14 @@ def query_api(handle, limit, offset, saved_at):
 
         if response.status_code == 200 or response.status_code == 304:
             return response.json()
-    except* (requests.exceptions.Timeout, requests.exceptions.ConnectionError) as e:
+    except (requests.exceptions.Timeout, requests.exceptions.ConnectionError) as e:
+        e.add_note('Connection error occurred while querying API.')
         st.error(f'Connection error: {e}')
-    except UnboundLocalError:
+    except UnboundLocalError as e:
+        e.add_note('UnboundLocalError occurred while querying API.')
         st.empty()
-    except requests.exceptions.HTTPError:
+    except requests.exceptions.HTTPError as e:
+        e.add_note('HTTP error occurred while querying API.')
         st.error('''
         **Temporarily Offline**
 
@@ -240,6 +249,7 @@ def query_api(handle, limit, offset, saved_at):
         ''')
         st.stop()
     except Exception as e:
+        e.add_note('An unexpected error occurred while querying API.')
         st.error(f'An error occurred: {e}')
         st.stop()
 
@@ -333,12 +343,15 @@ def display_not_tweet():
                 st.error(response_json.status_code)
 
                 st.divider()
-        except* (requests.exceptions.Timeout, requests.exceptions.ConnectionError) as e:
+        except (requests.exceptions.Timeout, requests.exceptions.ConnectionError) as e:
+            e.add_note('Connection error occurred while displaying non-tweet.')
             st.error(f'Connection error: {e}')
             st.divider()
-        except UnboundLocalError:
+        except UnboundLocalError as e:
+            e.add_note('UnboundLocalError occurred while displaying non-tweet.')
             st.empty()
         except Exception as e:
+            e.add_note('An unexpected error occurred while displaying non-tweet.')
             st.error(f'An error occurred: {e}')
             st.divider()
     else:
@@ -463,6 +476,7 @@ if query or st.session_state.count:
         if not links:
             st.error('Unable to query the Wayback Machine API.')
     except TypeError as e:
+        e.add_note('TypeError occurred while processing tweets.')
         st.error(f'''
         {e}. Refresh this page and try again.
 
@@ -470,5 +484,6 @@ if query or st.session_state.count:
         ''')
         st.session_state.offset = 0
     except Exception as e:
+        e.add_note('An unexpected error occurred while processing tweets.')
         st.error(f'An error occurred: {e}')
         st.session_state.offset = 0
